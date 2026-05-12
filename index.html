@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SHADOW SHOP - HỆ THỐNG VIP</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --primary: #7b2cbf; --cyan: #00f2ff; --bg: #050505; --card: #12141d; --text: #e2e8f0; --red: #ff4d4d; --green: #00ff88; --orange: #f39c12; }
+        * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background: var(--bg); color: var(--text); margin: 0; overflow-x: hidden; }
+        
+        /* Hiệu ứng VIP cho trang Login */
+        #auth-ui { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at center, #1a0b2e 0%, #050505 100%); }
+        .auth-card { width: 100%; max-width: 400px; padding: 40px; background: var(--card); border-radius: 30px; border: 2px solid var(--primary); box-shadow: 0 0 30px rgba(123, 44, 191, 0.3); text-align: center; }
+
+        .header { background: var(--card); padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--primary); position: sticky; top: 0; z-index: 100; }
+        .sidebar { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background: var(--card); transition: 0.4s; z-index: 1000; padding: 25px; border-right: 1px solid var(--primary); }
+        .sidebar.active { left: 0; }
+        .menu-item { padding: 15px; cursor: pointer; color: white; display: flex; align-items: center; gap: 12px; border-radius: 10px; transition: 0.3s; margin-bottom: 5px; border-bottom: 1px solid #1e212e; }
+        .menu-item:hover { background: rgba(123, 44, 191, 0.2); color: var(--cyan); }
+
+        .container { padding: 15px; max-width: 900px; margin: auto; }
+        .card { background: var(--card); border-radius: 20px; overflow: hidden; border: 1px solid #2d334a; margin-bottom: 25px; position: relative; transition: 0.3s; }
+        .card:hover { transform: translateY(-5px); border-color: var(--primary); }
+        
+        .badge { position: absolute; top: 15px; right: 15px; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 900; z-index: 10; text-transform: uppercase; }
+        .badge-on { background: var(--green); color: #000; box-shadow: 0 0 15px var(--green); }
+        .badge-off { background: var(--red); color: #fff; box-shadow: 0 0 15px var(--red); }
+
+        .p-info { padding: 20px; }
+        .input-pro { width: 100%; padding: 14px; margin: 10px 0; background: #080a12; border: 1px solid #333; color: white; border-radius: 12px; outline: none; transition: 0.3s; }
+        .input-pro:focus { border-color: var(--cyan); box-shadow: 0 0 10px rgba(0, 242, 255, 0.2); }
+        
+        .btn-main { width: 100%; padding: 16px; background: var(--cyan); border: none; font-weight: 900; cursor: pointer; border-radius: 12px; color: #000; transition: 0.3s; text-transform: uppercase; }
+        .btn-main:hover { opacity: 0.8; transform: scale(1.02); }
+        .btn-main:disabled { background: #2d334a; color: #64748b; cursor: not-allowed; }
+        
+        .price-big { font-size: 30px; color: var(--cyan); font-weight: 800; margin: 10px 0; display: block; }
+        .key-view { background: rgba(0, 255, 136, 0.05); border: 1px dashed var(--green); padding: 20px; border-radius: 12px; color: var(--green); word-break: break-all; font-family: 'Courier New', monospace; font-size: 1.1rem; }
+        .p-img { width: 100%; height: 200px; object-fit: cover; border-bottom: 1px solid #2d334a; }
+
+        /* Admin & History VIP */
+        .admin-card-detail { border: 2px solid var(--orange); padding: 20px; margin-bottom: 20px; background: #1a1c26; }
+        .copy-box { display: flex; align-items: center; gap: 10px; background: #050505; padding: 12px; border-radius: 10px; margin: 8px 0; border: 1px solid #333; }
+        .copy-box span { flex: 1; font-family: monospace; color: var(--cyan); font-size: 1.1rem; }
+        .btn-copy { background: none; border: none; color: var(--text); cursor: pointer; font-size: 1.2rem; }
+        .btn-copy:hover { color: var(--green); }
+    </style>
+</head>
+<body>
+
+    <div id="auth-ui">
+        <div class="auth-card">
+            <div style="font-size: 50px; color: var(--primary); margin-bottom: 10px;"><i class="fas fa-user-shield"></i></div>
+            <h2 style="color:var(--cyan); letter-spacing: 3px; margin-bottom: 5px;">SHADOW SYSTEM</h2>
+            <p style="color: #64748b; font-size: 13px; margin-bottom: 25px;">HỆ THỐNG QUẢN LÝ KEY VIP & ACC FF</p>
+            
+            <input type="text" id="user" class="input-pro" placeholder="Tên tài khoản...">
+            <input type="password" id="pass" class="input-pro" placeholder="Mật khẩu...">
+            
+            <div style="display: flex; gap: 10px; margin-top: 15px;">
+                <button class="btn-main" onclick="handleLogin()" style="background: var(--cyan); flex: 1;">ĐĂNG NHẬP</button>
+                <button class="btn-main" onclick="handleRegister()" style="background: var(--primary); color: white; flex: 1;">ĐĂNG KÝ</button>
+            </div>
+            <p id="auth-msg" style="font-size: 12px; margin-top: 20px; color: var(--red); min-height: 18px; font-weight: bold;"></p>
+        </div>
+    </div>
+
+    <div id="main-app" style="display:none">
+        <div class="header">
+            <i class="fas fa-bars" onclick="toggleSidebar()" style="cursor:pointer; color:var(--cyan); font-size:22px;"></i>
+            <div style="font-weight:900; letter-spacing: 1px;">SHADOW <span style="color:var(--cyan)">SHOP</span></div>
+            <div id="top-balance" style="color:var(--green); font-weight:bold; background: rgba(0,255,136,0.1); padding: 6px 15px; border-radius: 30px; border: 1px solid var(--green);">0đ</div>
+        </div>
+
+        <div id="sidebar" class="sidebar">
+            <div style="text-align: center; margin-bottom: 30px;">
+                <div style="font-size: 40px; color: var(--cyan);"><i class="fas fa-ghost"></i></div>
+                <h4 id="display-name" style="margin: 10px 0 0 0; color: white;">User</h4>
+            </div>
+            <div class="menu-item" onclick="showPage('home')"><i class="fas fa-shopping-cart"></i> Mua Sản Phẩm</div>
+            <div class="menu-item" onclick="showPage('napthe')"><i class="fas fa-credit-card"></i> Nạp Thẻ Cào</div>
+            <div class="menu-item" onclick="showPage('history')"><i class="fas fa-history"></i> Lịch Sử Đơn</div>
+            
+            <div id="admin-area" style="display:none; border-top: 2px solid var(--primary); margin-top:20px; padding-top: 15px;">
+                <div class="menu-item" onclick="showPage('admin-cards')" style="color:var(--orange)"><i class="fas fa-check-double"></i> DUYỆT THẺ NẠP</div>
+                <div class="menu-item" onclick="showPage('admin-keys')" style="color:var(--cyan)"><i class="fas fa-box"></i> NHẬP KHO HÀNG</div>
+            </div>
+            <div class="menu-item" onclick="logout()" style="color:var(--red); margin-top:40px;"><i class="fas fa-power-off"></i> Đăng xuất</div>
+        </div>
+
+        <div id="page-home" class="container">
+            <div class="card">
+                <div id="status-zygame" class="badge">ĐANG TẢI...</div>
+                <img src="https://i.imgur.com/8Q4S8vB.jpg" class="p-img">
+                <div class="p-info">
+                    <h3>ZYGAME VIP SYSTEM</h3>
+                    <select id="buy-zygame-type" class="input-pro" onchange="checkStockUI('Zygame')">
+                        <option value="35000|1day">Gói 1 Ngày - 35.000đ</option>
+                        <option value="55000|3day">Gói 3 Ngày - 55.000đ</option>
+                        <option value="85000|7day">Gói 7 Ngày - 85.000đ</option>
+                        <option value="130000|30day">Gói 30 Ngày - 130.000đ</option>
+                    </select>
+                    <span class="price-big" id="price-zygame">35.000đ</span>
+                    <button id="btn-zygame" class="btn-main" onclick="buyKey('Zygame')">Mua Ngay</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div id="status-drip" class="badge">ĐANG TẢI...</div>
+                <img src="https://i.imgur.com/uGzX6bL.jpg" class="p-img">
+                <div class="p-info">
+                    <h3>DRIP SILENT MOD</h3>
+                    <select id="buy-drip-type" class="input-pro" onchange="checkStockUI('Drip')">
+                        <option value="50000|1day">Gói 1 Ngày - 50.000đ</option>
+                        <option value="100000|7day">Gói 7 Ngày - 100.000đ</option>
+                        <option value="160000|30day">Gói 30 Ngày - 160.000đ</option>
+                    </select>
+                    <span class="price-big" id="price-drip">50.000đ</span>
+                    <button id="btn-drip" class="btn-main" onclick="buyKey('Drip')">Mua Ngay</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div id="status-clone" class="badge">ĐANG TẢI...</div>
+                <img src="https://i.imgur.com/jW8f7m4.jpg" class="p-img">
+                <div class="p-info">
+                    <h3>ACC CLONE FF (Level 5)</h3>
+                    <span class="price-big">2.500đ</span>
+                    <button id="btn-clone" class="btn-main" onclick="buyKey('Clone')">Mua Ngay</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="page-napthe" class="container" style="display:none">
+            <div class="card p-info">
+                <h3>NẠP THẺ CÀO (ADMIN DUYỆT)</h3>
+                <label>Loại thẻ:</label>
+                <select id="card-type" class="input-pro" onchange="updateRate()">
+                    <option value="Viettel">Viettel</option><option value="Vinaphone">Vinaphone</option>
+                    <option value="Mobifone">Mobifone</option>
+                </select>
+                <label>Mệnh giá:</label>
+                <select id="card-amount" class="input-pro" onchange="updateRate()">
+                    <option value="10000">10.000đ</option><option value="20000">20.000đ</option><option value="50000">50.000đ</option>
+                    <option value="100000">100.000đ</option><option value="200000">200.000đ</option><option value="500000">500.000đ</option>
+                </select>
+                <div style="background:rgba(0,255,136,0.1); padding:15px; border-radius:12px; text-align:center; margin:15px 0; border: 1px solid var(--green);">
+                    <span id="receive-amount" style="color:var(--green); font-weight:bold; font-size: 1.2rem;">Thực nhận: 8.700đ</span>
+                </div>
+                <input type="text" id="seri" class="input-pro" placeholder="Số Seri thẻ">
+                <input type="text" id="pin" class="input-pro" placeholder="Mã thẻ (PIN)">
+                <button class="btn-main" onclick="requestNap()" style="background: var(--green);">GỬI THẺ NGAY</button>
+            </div>
+        </div>
+
+        <div id="page-admin-cards" class="container" style="display:none">
+            <h2 style="color:var(--orange); text-align: center; text-transform: uppercase;">Danh sách chờ duyệt</h2>
+            <div id="admin-card-list"></div>
+        </div>
+
+        <div id="page-admin-keys" class="container" style="display:none">
+            <div class="card p-info">
+                <h3>NHẬP HÀNG VÀO KHO</h3>
+                <select id="adm-p" class="input-pro" onchange="updateAdminTime()">
+                    <option value="Zygame">Zygame</option><option value="Drip">Drip</option><option value="Clone">Acc Clone</option>
+                </select>
+                <select id="adm-t" class="input-pro"></select>
+                <textarea id="adm-keys" class="input-pro" rows="8" placeholder="Nhập Key: Mỗi dòng 1 Key..."></textarea>
+                <button class="btn-main" onclick="adminAddKey()">XÁC NHẬN NHẬP KHO</button>
+            </div>
+            <div id="stock-report" class="card p-info" style="font-size:14px; border-color: var(--cyan);"></div>
+        </div>
+
+        <div id="page-history" class="container" style="display:none">
+            <h2 style="color:var(--cyan); text-align: center; text-transform: uppercase;">Lịch sử đã mua</h2>
+            <div id="history-list"></div>
+        </div>
+    </div>
+
+    <script>
+        const ADMIN_ACC = { u: "shadow+999", p: "HV0308hv" };
+        const RATES = { "Viettel": 0.87, "Vinaphone": 0.90, "Mobifone": 0.82 };
+
+        let data = JSON.parse(localStorage.getItem('shadow_v4_db')) || {
+            currentUser: null, users: {}, pendingCards: [], orders: {},
+            stock: { "Zygame_1day":[], "Zygame_3day":[], "Zygame_7day":[], "Zygame_30day":[], "Drip_1day":[], "Drip_7day":[], "Drip_30day":[], "Clone_vinhvien":[] }
+        };
+
+        function save() { localStorage.setItem('shadow_v4_db', JSON.stringify(data)); }
+
+        if ("Notification" in window) { Notification.requestPermission(); }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text);
+            alert("Đã sao chép: " + text);
+        }
+
+        function playNotifSound() {
+            try {
+                const context = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = context.createOscillator();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(880, context.currentTime);
+                osc.connect(context.destination);
+                osc.start();
+                osc.stop(context.currentTime + 0.3);
+            } catch(e) {}
+        }
+
+        // --- AUTH LOGIC ---
+        function handleRegister() {
+            const u = document.getElementById('user').value.trim();
+            const p = document.getElementById('pass').value.trim();
+            const msg = document.getElementById('auth-msg');
+            if(u.length < 4 || p.length < 4) { msg.innerText = "Tài khoản/Mật khẩu ít nhất 4 ký tự!"; return; }
+            if(data.users[u]) { msg.innerText = "Tài khoản này đã tồn tại!"; return; }
+            
+            data.users[u] = { pass: p, balance: 0 };
+            save();
+            msg.style.color = "var(--green)";
+            msg.innerText = "Đăng ký thành công! Đang chuyển sang đăng nhập...";
+        }
+
+        function handleLogin() {
+            const u = document.getElementById('user').value.trim();
+            const p = document.getElementById('pass').value.trim();
+            const msg = document.getElementById('auth-msg');
+
+            // Check Admin Hardcode
+            if(u === ADMIN_ACC.u && p === ADMIN_ACC.p) {
+                if(!data.users[u]) data.users[u] = { pass: p, balance: 99999999 };
+                data.currentUser = u;
+                login();
+                return;
+            }
+
+            if(!data.users[u] || data.users[u].pass !== p) {
+                msg.style.color = "var(--red)";
+                msg.innerText = "Sai tài khoản hoặc mật khẩu!";
+                return;
+            }
+
+            data.currentUser = u;
+            login();
+        }
+
+        function login() {
+            document.getElementById('auth-ui').style.display = 'none';
+            document.getElementById('main-app').style.display = 'block';
+            document.getElementById('display-name').innerText = data.currentUser;
+            document.getElementById('admin-area').style.display = (data.currentUser === ADMIN_ACC.u) ? 'block' : 'none';
+            updateUI(); 
+            showPage('home');
+        }
+
+        // --- MUA BÁN ---
+        function checkStockUI(prod) {
+            let select = document.getElementById(`buy-${prod.toLowerCase()}-type`);
+            let key = (prod === 'Clone') ? "Clone_vinhvien" : `${prod}_${select.value.split('|')[1]}`;
+            if(prod !== 'Clone') document.getElementById(`price-${prod.toLowerCase()}`).innerText = parseInt(select.value.split('|')[0]).toLocaleString() + "đ";
+            
+            const count = data.stock[key]?.length || 0;
+            const b = document.getElementById(`status-${prod.toLowerCase()}`), btn = document.getElementById(`btn-${prod.toLowerCase()}`);
+            b.innerText = count > 0 ? `CÒN HÀNG (${count})` : "HẾT HÀNG";
+            b.className = count > 0 ? "badge badge-on" : "badge badge-off";
+            btn.disabled = count <= 0;
+        }
+
+        function buyKey(prod) {
+            const u = data.users[data.currentUser];
+            let price, time, keyS;
+            if(prod==='Clone') { price=2500; time='vinhvien'; keyS="Clone_vinhvien"; }
+            else { 
+                let val = document.getElementById(`buy-${prod.toLowerCase()}-type`).value;
+                [price, time] = val.split('|'); 
+                keyS=`${prod}_${time}`; 
+            }
+
+            if(u.balance < price) return alert("Bạn không đủ tiền! Hãy nạp thêm.");
+            if(confirm(`Xác nhận mua ${prod} với giá ${parseInt(price).toLocaleString()}đ?`)) {
+                const key = data.stock[keyS].shift();
+                u.balance -= parseInt(price);
+                if(!data.orders[data.currentUser]) data.orders[data.currentUser] = [];
+                data.orders[data.currentUser].unshift({ name: prod, time, key, date: new Date().toLocaleString() });
+                save(); updateUI(); checkStockUI(prod); showPage('history');
+            }
+        }
+
+        // --- NẠP THẺ ---
+        function updateRate() {
+            const t = document.getElementById('card-type').value, a = document.getElementById('card-amount').value;
+            document.getElementById('receive-amount').innerText = `Thực nhận: ${Math.floor(a * RATES[t]).toLocaleString()}đ`;
+        }
+
+        function requestNap() {
+            const t = document.getElementById('card-type').value, a = parseInt(document.getElementById('card-amount').value);
+            const s = document.getElementById('seri').value, p = document.getElementById('pin').value;
+            if(!s || !p) return alert("Vui lòng nhập đủ Seri và Mã thẻ!");
+            
+            data.pendingCards.push({ user: data.currentUser, type: t, amount: a, seri: s, pin: p, rec: Math.floor(a*RATES[t]), time: new Date().toLocaleTimeString() });
+            save(); 
+            alert("Gửi thẻ thành công! Vui lòng chờ Admin duyệt.");
+            document.getElementById('seri').value = ""; document.getElementById('pin').value = "";
+
+            if (Notification.permission === "granted") {
+                new Notification("CÓ THẺ MỚI", { body: `Khách ${data.currentUser} vừa nạp ${t} ${a}đ` });
+            }
+            playNotifSound();
+        }
+
+        // --- ADMIN ---
+        function renderAdminCards() {
+            let h = "";
+            data.pendingCards.forEach((c, i) => {
+                h += `
+                <div class="card admin-card-detail">
+                    <div style="display:flex; justify-content: space-between; border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 15px;">
+                        <span style="color:var(--orange); font-weight: bold;">[${c.time}] USER: ${c.user}</span>
+                        <span style="color:var(--green); font-weight: 900;">${c.type} - ${c.amount.toLocaleString()}đ</span>
+                    </div>
+                    <div>
+                        <label style="font-size: 11px; color: #888;">SỐ SERI:</label>
+                        <div class="copy-box">
+                            <span>${c.seri}</span>
+                            <button class="btn-copy" onclick="copyToClipboard('${c.seri}')"><i class="fas fa-copy"></i></button>
+                        </div>
+                        <label style="font-size: 11px; color: #888; margin-top: 10px; display: block;">MÃ PIN THẺ:</label>
+                        <div class="copy-box" style="border-color: var(--cyan);">
+                            <span style="font-size: 1.3rem; letter-spacing: 2px; font-weight: bold;">${c.pin}</span>
+             
